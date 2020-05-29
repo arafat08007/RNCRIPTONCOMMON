@@ -7,9 +7,8 @@ export interface GetListProductionDept {
   Count: string;
   Id: string;
   DeptName: string;
- 
 }
-export interface GetListDeptInputOutput{
+export interface GetListDeptInputOutput {
   Count: string;
   Id: string;
   DeptName: string;
@@ -17,46 +16,45 @@ export interface GetListDeptInputOutput{
 
 export interface GetOrderBasicByJob {
   Id: string;
-	BuyerName: string;
-	StyleName: string;
-	ColorName: string;
-	Qty: string;
-	PrdQty: string;
-	SizeName: string;
+  BuyerName: string;
+  StyleName: string;
+  ColorName: string;
+  Qty: string;
+  PrdQty: string;
+  SizeName: string;
 }
 
 export interface GetOrderSizeWiseBreakdown {
   Id: string;
-	BuyerName: string;
-	StyleName: string;
-	ColorName: string;
-	Qty: string;
-	PrdQty: string;
-	SizeName: string;
+  BuyerName: string;
+  StyleName: string;
+  ColorName: string;
+  Qty: string;
+  PrdQty: string;
+  SizeName: string;
 }
 
 export interface GetListLine {
-  Id : string;
-  Name : string;
+  Id: string;
+  Name: string;
 }
-
 
 interface ProductionState {
   proddept: GetListProductionDept[];
- // requisitions: { [key: string]: Requisition };
-  
+  // requisitions: { [key: string]: Requisition };
+
   inputoutput: GetListDeptInputOutput[];
 
   productstyle: GetOrderBasicByJob[];
-  productsize : GetOrderSizeWiseBreakdown [];
-  productline : GetListLine [];
+  productsize: GetOrderSizeWiseBreakdown[];
+  productline: GetListLine[];
   loading: boolean;
 }
 
 const initialState: ProductionState = {
-  proddept: [], 
+  proddept: [],
   inputoutput: [],
-  productstyle : [],
+  productstyle: [],
   productsize: [],
   productline: [],
 
@@ -91,8 +89,7 @@ const authSlice = createSlice({
   },
 });
 
-
-export const getDepartment = (): AppThunk => async (dispatch) => {
+export const getDepartment = (): AppThunk => async dispatch => {
   try {
     const { data } = await prodctionapi.get('/GetListProductionDept');
     dispatch(gotDepartment(data));
@@ -101,7 +98,7 @@ export const getDepartment = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const getLine = (): AppThunk => async (dispatch) => {
+export const getLine = (): AppThunk => async dispatch => {
   try {
     const { data } = await prodctionapi.get('/GetListLine');
     dispatch(gotline(data));
@@ -112,44 +109,38 @@ export const getLine = (): AppThunk => async (dispatch) => {
 
 export const getStyle = (filters?: {
   JobNo?: string;
-  
-}): AppThunk => async (dispatch) => {
+}): AppThunk => async dispatch => {
   //const user = getState().auth.user;
   dispatch(gotstyle([]));
   dispatch(setLoading(true));
   try {
     const { data } = await prodctionapi.get('/GetOrderBasicByJob', {
       params: {
-       
         JobNo: filters?.JobNo || '3000',
       },
     });
     dispatch(gotinout(data));
-   // console.warn(DeptName);
+    // console.warn(DeptName);
   } catch (e) {
     dispatch(setLoading(false));
     // throw e;
   }
 };
 
-
-
 export const getOption = (filters?: {
   DeptName?: string;
-  
-}): AppThunk => async (dispatch) => {
+}): AppThunk => async dispatch => {
   //const user = getState().auth.user;
   dispatch(gotinout([]));
   dispatch(setLoading(true));
   try {
     const { data } = await prodctionapi.get('/GetListDeptInputOutput', {
       params: {
-       
         DeptName: filters?.DeptName || 'Cutting',
       },
     });
     dispatch(gotinout(data));
-   // console.warn(DeptName);
+    // console.warn(DeptName);
   } catch (e) {
     dispatch(setLoading(false));
     // throw e;
@@ -159,30 +150,26 @@ export const getOption = (filters?: {
 export const getSize = (filters?: {
   DeptId?: string;
   StyleId?: string;
-  
-}): AppThunk => async (dispatch) => {
+}): AppThunk => async dispatch => {
   //const user = getState().auth.user;
   dispatch(gotsize([]));
   dispatch(setLoading(true));
   try {
     const { data } = await prodctionapi.get('/GetOrderSizeWiseBreakdown', {
       params: {
-       
         DeptId: filters?.DeptId || 'CuttingInput',
         StyleId: filters?.StyleId || '25320290-bd42-4d3a-9bb8-03f30637737c',
       },
     });
-    dispatch(gotinout(data));
-   // console.warn(DeptName);
+    dispatch(gotsize(data));
+    // console.warn(DeptName);
   } catch (e) {
     dispatch(setLoading(false));
     // throw e;
   }
 };
 
-
 export const {
-
   gotDepartment,
   gotinout,
   gotstyle,
