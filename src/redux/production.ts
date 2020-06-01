@@ -107,40 +107,33 @@ export const getLine = (): AppThunk => async dispatch => {
   }
 };
 
-export const getStyle = (filters?: {
-  JobNo?: string;
-}): AppThunk => async dispatch => {
+export const getStyle = (JobNo?: string): AppThunk => async dispatch => {
   //const user = getState().auth.user;
   dispatch(gotstyle([]));
   dispatch(setLoading(true));
   try {
     const { data } = await prodctionapi.get('/GetOrderBasicByJob', {
       params: {
-        JobNo: filters?.JobNo || '3000',
+        JobNo: JobNo || '3000',
       },
     });
-    dispatch(gotinout(data));
-    // console.warn(DeptName);
+    dispatch(gotstyle(data));
   } catch (e) {
     dispatch(setLoading(false));
     // throw e;
   }
 };
 
-export const getOption = (filters?: {
-  DeptName?: string;
-}): AppThunk => async dispatch => {
-  //const user = getState().auth.user;
+export const getOption = (DeptName?: string): AppThunk => async dispatch => {
   dispatch(gotinout([]));
   dispatch(setLoading(true));
   try {
     const { data } = await prodctionapi.get('/GetListDeptInputOutput', {
       params: {
-        DeptName: filters?.DeptName || 'Cutting',
+        DeptName: DeptName || 'Cutting',
       },
     });
     dispatch(gotinout(data));
-    // console.warn(DeptName);
   } catch (e) {
     dispatch(setLoading(false));
     // throw e;

@@ -30,12 +30,16 @@ const persistedReducer = persistReducer<ReturnType<typeof rootReducer>>(
     storage: AsyncStorage,
     whitelist: ['auth'],
   },
-  rootReducer,
+  rootReducer
 );
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: getDefaultMiddleware({ thunk: true, serializableCheck: false }),
+  middleware: getDefaultMiddleware({
+    thunk: true,
+    serializableCheck: false,
+    immutableCheck: false,
+  }),
 });
 
 export const persistor = persistStore(store);
