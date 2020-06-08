@@ -1,10 +1,9 @@
-import React, { Component, useEffect, useCallback } from 'react';
+import React, { Component } from 'react';
 
 import {
   View,
   Text,
   StyleSheet,
-  CheckBox,
   ScrollView,
   TouchableOpacity,
   TouchableHighlight,
@@ -12,7 +11,7 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import { Icon, Button, Input } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 //@ts-ignore
 import { Dropdown } from 'react-native-material-dropdown';
 //@ts-ignore
@@ -20,11 +19,16 @@ import { ProgressSteps, ProgressStep } from 'react-native-progress-steps';
 import { appColors } from '~/theme';
 
 //ApI call
-import { useSelector, useDispatch, connect } from 'react-redux';
+import { useSelector, connect } from 'react-redux';
 import { RootState } from '~/redux/store';
 
-import { getDepartment, getOption, getSize } from '~/redux/production';
-import { State } from 'react-native-gesture-handler';
+import {
+  getDepartment,
+  getOption,
+  getSize,
+  getStyle,
+  getLine,
+} from '~/redux/production';
 
 class PRODUCTION extends Component<any, any> {
   constructor(props: any) {
@@ -34,124 +38,15 @@ class PRODUCTION extends Component<any, any> {
       errors: false,
 
       backgroundColorstyle: '#F2F2F2',
-
-      //radioBtnsData: ['Cutting', 'Prinitng', 'Embrodery','Sweing','Ironing','Finising'],
-
-      /*radioBtnsData: [
-        { DeptName: 'Cutting', Id: 'cutting' },
-        { DeptName: 'Prinitng', Id: 'printing' },
-        { DeptName: 'Embrodery', Id: 'emb' },
-        { DeptName: 'Sweing', Id: 'sew' },
-        { DeptName: 'Ironing', Id: 'iron' },
-        { DeptName: 'Finising', Id: 'finishing' },
-      ],*/
       checked: 0,
       depatcheckedid: '',
       errorflag: {},
-      // lineData : ['Line 1', 'Line 2', 'Line 3'],
-      lineData: [
-        { DeptName: 'Input', id: 'L001' },
-        { DeptName: 'Output', id: 'L002' },
-        { DeptName: 'QA', id: 'L003' },
-        { DeptName: 'Delivery', id: 'L004' },
-      ],
       linechecked: 0,
       linecheckedid: '',
-
-      //  styleData : ['Style 1', 'Style 2', 'Style 3'],
-
-      styleData: [
-        {
-          name: 'style 1',
-          color: 'RED',
-          type: 'Full shirt',
-          buyer: 'H&M',
-          styleid: 'S001',
-        },
-        {
-          name: 'style 2',
-          color: 'WHITE',
-          type: 'Full shirt',
-          buyer: 'H&M',
-          styleid: 'S002',
-        },
-        {
-          name: 'style 3',
-          color: 'BLACK',
-          type: 'Full shirt',
-          buyer: 'H&M',
-          styleid: 'S003',
-        },
-      ],
 
       stylechecked: 0,
       stylecheckedid: '',
 
-      sizeData: [
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '26',
-          PrdQty: '0',
-          SizeName: 'XXS',
-        },
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '165',
-          PrdQty: '0',
-          SizeName: 'XS',
-        },
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '279',
-          PrdQty: '0',
-          SizeName: 'S',
-        },
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '294',
-          PrdQty: '0',
-          SizeName: 'M',
-        },
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '227',
-          PrdQty: '0',
-          SizeName: 'L',
-        },
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '160',
-          PrdQty: '0',
-          SizeName: 'XL',
-        },
-        {
-          Id: ' ',
-          BuyerName: ' ',
-          StyleName: ' ',
-          ColorName: ' ',
-          Qty: '62',
-          PrdQty: '0',
-          SizeName: 'XXL',
-        },
-      ],
       sizechecked: 0,
       sizecheckedid: '',
 
@@ -162,7 +57,7 @@ class PRODUCTION extends Component<any, any> {
 
       jobnumber: '',
       productionqnty: 0,
-      todayqnty: 0,
+      todayqnty: {},
     };
   }
 
@@ -176,6 +71,11 @@ class PRODUCTION extends Component<any, any> {
       flex: 1,
       justifyContent: 'center',
     },
+  };
+
+  fetchStyle = () => {
+    console.log('fetching styles');
+    this.props.dispatch(getStyle(this.state.searchString));
   };
 
   onNextStep = () => {
@@ -215,8 +115,6 @@ class PRODUCTION extends Component<any, any> {
 
       var selectedept = this.state.depatcheckedid;
       this.props.dispatch(getOption(selectedept.toString()));
-      console.info(selectedept);
-      console.log(this.props.production.inputoutput);
     }
   };
 
@@ -231,9 +129,6 @@ class PRODUCTION extends Component<any, any> {
   onSubmitSteps = () => {
     console.log('called on submit step.');
     var totalQnty = this.state.totalQnty;
-    var goodQnty = Number(this.state?.goodQnty);
-    var altrQnty = Number(this.state.altrQnty);
-    var rejectQnty = Number(this.state.rejectQnty);
 
     var checkedDept = this.state.depatcheckedid;
 
@@ -257,6 +152,7 @@ class PRODUCTION extends Component<any, any> {
 
   componentDidMount() {
     this.props.dispatch(getDepartment());
+    this.props.dispatch(getLine());
     // this.props.dispatch(getInOut());
     //this.props.dispatch()
   }
@@ -293,14 +189,6 @@ class PRODUCTION extends Component<any, any> {
     };
     const prevbtntextstyle = {
       color: appColors.grey3, //393939
-    };
-
-    const submitbtnstyle = {
-      paddingStart: 10,
-      paddingEnd: 10,
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: 'tomato',
     };
 
     return (
@@ -536,7 +424,7 @@ class PRODUCTION extends Component<any, any> {
                   </View>
                   <TouchableHighlight
                     style={{ alignItems: 'center', justifyContent: 'center' }}
-                    //onPress = {()=>{this._fetchResults()}}
+                    onPress={this.fetchStyle}
                     underlayColor="transparent"
                   >
                     <View>
@@ -545,7 +433,7 @@ class PRODUCTION extends Component<any, any> {
                   </TouchableHighlight>
                 </View>
                 <ScrollView>
-                  {this.state.styleData?.map((data, key) => {
+                  {this.props.production.productstyle?.map((data, key) => {
                     return (
                       <View key={key}>
                         {this.state.stylechecked == key ? (
@@ -604,7 +492,7 @@ class PRODUCTION extends Component<any, any> {
                                 padding: 10,
                               }}
                             >
-                              Style: {data.name}
+                              Style: {data.StyleName}
                             </Text>
                             <View
                               style={{
@@ -615,13 +503,13 @@ class PRODUCTION extends Component<any, any> {
                               }}
                             >
                               <Text style={styles.subtext}>
-                                Color: {data.color}
+                                Color: {data.ColorName}
                               </Text>
                               <Text style={styles.subtext}>
                                 Type: {data.type}
                               </Text>
                               <Text style={styles.subtext}>
-                                Buyer: {data.buyer}
+                                Buyer: {data.BuyerName}
                               </Text>
                             </View>
                           </TouchableOpacity>
@@ -649,7 +537,10 @@ class PRODUCTION extends Component<any, any> {
                   <Dropdown
                     containerStyle={{ width: '100%', marginBottom: 5 }}
                     label="Line number:"
-                    //    data={locations.map((l) => ({label:l.LocName, value:l.LocId}))}
+                    data={this.props.production.productline?.map(l => ({
+                      label: l.Name,
+                      value: l.Id,
+                    }))}
 
                     //  selectedItemColor={'blue'}
 
@@ -730,9 +621,14 @@ class PRODUCTION extends Component<any, any> {
                             placeholder="Qnty"
                             placeholderTextColor={appColors.grey5}
                             onChangeText={value =>
-                              this.setState({ todayqnty: value })
+                              this.setState({
+                                todayqnty: {
+                                  ...this.state.todayqnty,
+                                  key: value,
+                                },
+                              })
                             }
-                            value={this.state.todayqnty}
+                            value={this.state.todayqnty[key]}
                           />
                         </View>
                       </View>
